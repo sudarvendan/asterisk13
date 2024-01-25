@@ -1,6 +1,5 @@
 FROM ubuntu:latest
 LABEL maintainer='sudarvendan@gmail.com'
-ENV NUM 4
 
 RUN apt-get update \
 	&& apt-get install -y \
