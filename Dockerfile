@@ -1,43 +1,20 @@
 FROM ubuntu:latest
 LABEL maintainer='sudarvendan@gmail.com'
 
-RUN apt-get update \
-	&& apt-get install -y \
-		build-essential \
-		git-core \
-		subversion \
-		wget \
-		libjansson-dev \
-		sqlite \
-		autoconf \
-		automake \
-		libxml2-dev \
-		libncurses5-dev \
-		libtool \
-		uuid-dev \
-		openssl \
-		pkg-config \
-		sqlite3 \
-		libsqlite3-dev \
-	&& cd /usr/src \
-	&& git clone https://github.com/sudarvendan/asterisk13.git \
-	&& cd asterisk13 \
-	&& ./configure \
-		--libexecdir=/usr/lib64 \
-		--with-jansson \
-	&& make clean \
-	&& make \
-	&& make install \
-	&& make samples \
-	&& make config \
-	&& sed -i -e 's/# MAXFILES=/MAXFILES=/' /usr/sbin/safe_asterisk \
-	&& useradd -m asterisk -s /sbin/nologin \
-	&& chown -R asterisk:asterisk /var/run/asterisk \
+COPY etc_asterisk /etc/asterisk
+COPY usr_sbin /usr/sbin/
+COPY var_log_asterisk /var/log/asterisk
+COPY var_spool_asterisk /var/spool/asterisk
+COPY usr_lib_asterisk /usr/lib/asterisk
+COPY var_lib_asterisk /var/lib/asterisk
+COPY var_run_asterisk /var/run/asterisk
+
+RUN sed -i -e 's/# MAXFILES=/MAXFILES=/' /usr/sbin/safe_asterisk \
+&& useradd -m asterisk -s /sbin/nologin \
+&& chown -R asterisk:asterisk /var/run/asterisk \
                                   /etc/asterisk/ \
                                   /var/lib/asterisk \
                                   /var/log/asterisk \
                                   /var/spool/asterisk \
-                                  /usr/lib64/asterisk \
+                                  /usr/sbin/asterisk \
 
-USER asterisk
-CMD /usr/sbin/asterisk -f
